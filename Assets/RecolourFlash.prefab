@@ -69,7 +69,7 @@ GameObject:
   m_IsActive: 1
 --- !u!1 &1396273158787080
 GameObject:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
@@ -211,7 +211,7 @@ GameObject:
   m_IsActive: 1
 --- !u!1 &1920045277611094
 GameObject:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
@@ -232,12 +232,12 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1920045277611094}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.005, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.04000002, y: 0.0196, z: -0.03569998}
   m_LocalScale: {x: 0.07, y: 0.002, z: 0.07}
   m_Children: []
-  m_Father: {fileID: 4479988869302290}
-  m_RootOrder: 1
+  m_Father: {fileID: 4047970890267350}
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4047970890267350
 Transform:
@@ -255,6 +255,8 @@ Transform:
   - {fileID: 4916832628846298}
   - {fileID: 4616444696788090}
   - {fileID: 4479988869302290}
+  - {fileID: 4814994383747418}
+  - {fileID: 4036503562747480}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -282,7 +284,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4105334127631156}
-  - {fileID: 4036503562747480}
   m_Father: {fileID: 4047970890267350}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -311,7 +312,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4807132244044862}
-  - {fileID: 4814994383747418}
   m_Father: {fileID: 4047970890267350}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -360,12 +360,12 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1396273158787080}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.005, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.04, y: 0.0196, z: -0.0357}
   m_LocalScale: {x: 0.07, y: 0.002, z: 0.07}
   m_Children: []
-  m_Father: {fileID: 4616444696788090}
-  m_RootOrder: 1
+  m_Father: {fileID: 4047970890267350}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4823785331528900
 Transform:
@@ -921,6 +921,9 @@ MonoBehaviour:
   YesButton: {fileID: 114880108636223946}
   NoButton: {fileID: 114506106903484632}
   ScreenText: {fileID: 102926635672399614}
+  ButtonObjs:
+  - {fileID: 1540144947201340}
+  - {fileID: 1748607661098518}
 --- !u!114 &114810852875598378
 MonoBehaviour:
   m_ObjectHideFlags: 1

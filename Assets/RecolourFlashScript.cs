@@ -503,12 +503,16 @@ public class RecolourFlashScript : MonoBehaviour
             while ((int)BombInfo.GetTime() % 2 != 0)
                 yield return null;
             btn.OnInteract();
+            yield return new WaitForSeconds(0.1f);
+            btn.OnInteractEnded();
         }
         else if (m.Groups["odd"].Success)
         {
             while ((int)BombInfo.GetTime() % 2 != 1)
                 yield return null;
             btn.OnInteract();
+            yield return new WaitForSeconds(0.1f);
+            btn.OnInteractEnded();
         }
         else
         {
@@ -517,7 +521,11 @@ public class RecolourFlashScript : MonoBehaviour
                 yield return null;
             btn.OnInteract();
             yield return new WaitForSeconds(0.1f);
+            btn.OnInteractEnded();
+            yield return new WaitForSeconds(0.1f);
             btn.OnInteract();
+            yield return new WaitForSeconds(0.1f);
+            btn.OnInteractEnded();
         }
     }
 }

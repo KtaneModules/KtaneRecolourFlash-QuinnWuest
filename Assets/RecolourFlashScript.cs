@@ -201,13 +201,13 @@ public class RecolourFlashScript : MonoBehaviour
                         {
                             _curCol = (_curCol + 1) % 5;
                             _curPos = CalcCurPos();
-                            Debug.LogFormat("[Recolour Flash #{0}] Presssed YES on an even digit. Moving right to {1}.", _moduleId, CalcCoord(_curPos));
+                            Debug.LogFormat("[Recolour Flash #{0}] Pressed YES on an even digit. Moving right to {1}.", _moduleId, CalcCoord(_curPos));
                         }
                         else
                         {
                             _curCol = (_curCol + 4) % 5;
                             _curPos = CalcCurPos();
-                            Debug.LogFormat("[Recolour Flash #{0}] Presssed YES on an odd digit. Moving left to {1}.", _moduleId, CalcCoord(_curPos));
+                            Debug.LogFormat("[Recolour Flash #{0}] Pressed YES on an odd digit. Moving left to {1}.", _moduleId, CalcCoord(_curPos));
                         }
 
                     }
@@ -217,13 +217,13 @@ public class RecolourFlashScript : MonoBehaviour
                         {
                             _curRow = (_curRow + 1) % 5;
                             _curPos = CalcCurPos();
-                            Debug.LogFormat("[Recolour Flash #{0}] Presssed NO on an even digit. Moving down to {1}.", _moduleId, CalcCoord(_curPos));
+                            Debug.LogFormat("[Recolour Flash #{0}] Pressed NO on an even digit. Moving down to {1}.", _moduleId, CalcCoord(_curPos));
                         }
                         else
                         {
                             _curRow = (_curRow + 4) % 5;
                             _curPos = CalcCurPos();
-                            Debug.LogFormat("[Recolour Flash #{0}] Presssed NO on an odd digit. Moving up to {1}.", _moduleId, CalcCoord(_curPos));
+                            Debug.LogFormat("[Recolour Flash #{0}] Pressed NO on an odd digit. Moving up to {1}.", _moduleId, CalcCoord(_curPos));
                         }
                     }
                     Audio.PlaySoundAtTransform("SemaphorePress", transform);

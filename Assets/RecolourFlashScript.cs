@@ -22,18 +22,18 @@ public class RecolourFlashScript : MonoBehaviour
     private static int _moduleIdCounter = 1;
     private bool _moduleSolved;
 
-    private static readonly string[] _chartWords = new string[] { "ALARM", "BEEP", "BLUE", "BOMBS", "BOOM", "BRAVO", "CALL", "CHART", "CHECK", "COUNT", "DECOY", "DELTA", "DONE", "EAST", "ECHO", "EDGE", "FALSE", "FIND", "FOUND", "FOUR", "GOLF", "GREEN", "HELP", "HOTEL", "INDIA", "JINX", "LIMA", "LINE", "LIST", "LOOK", "MATH", "MIKE", "NEXT", "NORTH", "OSCAR", "PORT", "READ", "ROMEO", "SEVEN", "SOLVE", "SPELL", "TALK", "TANGO", "TEST", "TIME", "TRUE", "WORD", "WORK", "XRAY", "ZULU" };
+    private static readonly string[] _chartWords = new string[] { "DONE", "ADD", "FIND", "EAST", "PORT", "BOOM", "LIME", "ECHO", "CALL", "LOOK", "ZULU", "XRAY", "YES", "HELP", "BEEP", "TRUE", "MIKE", "EDGE", "RED", "WORD", "WORK", "TEST", "JINX", "GOLF", "TALK", "SIX", "LIST", "MATH", "NEXT", "READ", "LIMA", "FOUR" };
 
-    private static readonly string[] _colourNames = new string[] { "RED", "YELLOW", "GREEN", "CYAN", "BLUE", "MAGENTA" };
-    private static readonly Color32[] _colours = new Color32[] { new Color32(255, 0, 0, 255), new Color32(255, 255, 0, 255), new Color32(0, 255, 0, 255), new Color32(0, 255, 255, 255), new Color32(0, 0, 255, 255), new Color32(255, 0, 255, 255) };
+    private static readonly string[] _colourNames = new string[] { "RED", "YELLOW", "GREEN", "WHITE", "BLUE", "MAGENTA" };
+    private static readonly Color32[] _colours = new Color32[] { new Color32(255, 0, 0, 255), new Color32(255, 255, 0, 255), new Color32(0, 255, 0, 255), new Color32(255, 255, 255, 255), new Color32(0, 0, 255, 255), new Color32(255, 0, 255, 255) };
 
     private int _lastTimerSecond;
     private bool _isEvenDigit;
     private int _pressesDuringTimerTick;
 
     private char[] _field;
-    private const int _w = 5;
-    private const int _h = 5;
+    private const int _w = 4;
+    private const int _h = 4;
     private string _solution;
     private int _solutionStart;
     private int _solutionEnd;
@@ -87,7 +87,6 @@ public class RecolourFlashScript : MonoBehaviour
     private int _curCol;
     private bool _yesPressed;
     private int _curFlash;
-    private bool _isFlashingWord;
 
     private Coroutine _flashSequence;
     private Coroutine[] _pressAnimations = new Coroutine[2];
@@ -102,8 +101,8 @@ public class RecolourFlashScript : MonoBehaviour
 
         _solution = _chartWords[Rnd.Range(0, _chartWords.Length)];
         GenerateWordSearch();
-        _curRow = Rnd.Range(0, 5);
-        _curCol = Rnd.Range(0, 5);
+        _curRow = Rnd.Range(0, 4);
+        _curCol = Rnd.Range(0, 4);
         _curPos = CalcCurPos();
 
         Debug.LogFormat("[Recolour Flash #{0}] The chosen word is {1}.", _moduleId, _solution);
@@ -173,14 +172,14 @@ public class RecolourFlashScript : MonoBehaviour
 
     private int CalcCurPos()
     {
-        return (_curRow * 5) + _curCol;
+        return (_curRow * 4) + _curCol;
     }
 
     private string CalcCoord(int pos)
     {
         string s = "";
-        s += "ABCDE"[pos % 5];
-        s += "12345"[pos / 5];
+        s += "ABCD"[pos % 4];
+        s += "1234"[pos / 4];
         return s;
     }
 
@@ -199,13 +198,13 @@ public class RecolourFlashScript : MonoBehaviour
                     {
                         if (!_isEvenDigit) // As the press was the previous one
                         {
-                            _curCol = (_curCol + 1) % 5;
+                            _curCol = (_curCol + 1) % 4;
                             _curPos = CalcCurPos();
                             Debug.LogFormat("[Recolour Flash #{0}] Pressed YES on an even digit. Moving right to {1}.", _moduleId, CalcCoord(_curPos));
                         }
                         else
                         {
-                            _curCol = (_curCol + 4) % 5;
+                            _curCol = (_curCol + 3) % 4;
                             _curPos = CalcCurPos();
                             Debug.LogFormat("[Recolour Flash #{0}] Pressed YES on an odd digit. Moving left to {1}.", _moduleId, CalcCoord(_curPos));
                         }
@@ -215,13 +214,13 @@ public class RecolourFlashScript : MonoBehaviour
                     {
                         if (!_isEvenDigit) // As the press was the previous one
                         {
-                            _curRow = (_curRow + 1) % 5;
+                            _curRow = (_curRow + 1) % 4;
                             _curPos = CalcCurPos();
                             Debug.LogFormat("[Recolour Flash #{0}] Pressed NO on an even digit. Moving down to {1}.", _moduleId, CalcCoord(_curPos));
                         }
                         else
                         {
-                            _curRow = (_curRow + 4) % 5;
+                            _curRow = (_curRow + 3) % 4;
                             _curPos = CalcCurPos();
                             Debug.LogFormat("[Recolour Flash #{0}] Pressed NO on an odd digit. Moving up to {1}.", _moduleId, CalcCoord(_curPos));
                         }
@@ -287,17 +286,27 @@ public class RecolourFlashScript : MonoBehaviour
 
     private IEnumerator FlashSequence()
     {
-        while (true)
+        while (!_moduleSolved)
         {
-            _isFlashingWord = true;
-            for (_curFlash = 0; _curFlash < _flashes.Length; _curFlash++)
+            ScreenText.text = _colourNames[_flashes[_curFlash][0]];
+            ScreenText.color = _colours[_flashes[_curFlash][1]];
+            if (_curFlash == 0)
             {
-                ScreenText.text = _colourNames[_flashes[_curFlash][0]];
-                ScreenText.color = _colours[_flashes[_curFlash][1]];
-                yield return new WaitForSeconds(0.5f);
+                for (int i = 0; i < 5; i++)
+                {
+                    if (i % 2 == 0)
+                    {
+                        ScreenText.text = _colourNames[_flashes[_curFlash][0]];
+                        ScreenText.color = _colours[_flashes[_curFlash][1]];
+                    }
+                    else
+                    {
+                        ScreenText.text = "";
+                    }
+                    yield return new WaitForSeconds(0.1f);
+                }
             }
-            ScreenText.text = "";
-            _isFlashingWord = false;
+            _curFlash = (_curFlash + 1) % 8;
             yield return new WaitForSeconds(0.5f);
         }
     }
@@ -305,8 +314,6 @@ public class RecolourFlashScript : MonoBehaviour
     private void GenerateSemaphoreFlash()
     {
         var curLetter = Array.IndexOf("ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray(), _field[_curPos]);
-        tryAgain:
-        var hasCyan = false;
         for (int i = 0; i < _flashes.Length; i++)
         {
             tryAgain2:
@@ -320,18 +327,11 @@ public class RecolourFlashScript : MonoBehaviour
                 if (_flashes[i][1] == _flashes[i][0])
                     goto tryAgain3;
             }
-            if (_flashes[i][0] == 3 || _flashes[i][1] == 3)
-                hasCyan = true;
-            if (i != 0 && _flashes[i][0] == _flashes[i - 1][0] && _flashes[i][1] == _flashes[i - 1][1])
+            if (_flashes[i][0] == _flashes[(i + 7) % 8][0] && _flashes[i][1] == _flashes[(i + 7) % 8][1])
                 goto tryAgain2;
         }
-        if (!hasCyan)
-            goto tryAgain;
-        if (_isFlashingWord)
-        {
-            ScreenText.text = _colourNames[_flashes[_curFlash][0]];
-            ScreenText.color = _colours[_flashes[_curFlash][1]];
-        }
+        ScreenText.text = _colourNames[_flashes[_curFlash][0]];
+        ScreenText.color = _colours[_flashes[_curFlash][1]];
     }
 
     private void GenerateWordSearch()
@@ -354,7 +354,7 @@ public class RecolourFlashScript : MonoBehaviour
                     _solutionStart = coord;
                     var dx = new[] { 0, 1, 1, 1, 0, -1, -1, -1 };
                     var dy = new[] { 1, 1, 0, -1, -1, -1, 0, 1 };
-                    _solutionEnd = coord + dx[(int)dir] * (_solution.Length - 1) + 5 * dy[(int)dir] * (_solution.Length - 1);
+                    _solutionEnd = coord + dx[(int)dir] * (_solution.Length - 1) + 4 * dy[(int)dir] * (_solution.Length - 1);
                     goto initialPlaced;
                 }
 
@@ -378,8 +378,8 @@ public class RecolourFlashScript : MonoBehaviour
                     }
 
         Debug.LogFormat("[Recolour Flash #{0}] Field:", _moduleId);
-        for (int r = 0; r < 5; r++)
-            Debug.LogFormat("[Recolour Flash #{0}] {1} {2} {3} {4} {5}", _moduleId, _field[r * 5 + 0], _field[r * 5 + 1], _field[r * 5 + 2], _field[r * 5 + 3], _field[r * 5 + 4]);
+        for (int r = 0; r < 4; r++)
+            Debug.LogFormat("[Recolour Flash #{0}] {1} {2} {3} {4} ", _moduleId, _field[r * 4 + 0], _field[r * 4 + 1], _field[r * 4 + 2], _field[r * 4 + 3]);
     }
 
     private bool TryPlaceWord(string word, int i, int x, int y, WordDirection dir)

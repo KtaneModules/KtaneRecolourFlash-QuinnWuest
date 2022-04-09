@@ -22,7 +22,7 @@ public class RecolourFlashScript : MonoBehaviour
     private static int _moduleIdCounter = 1;
     private bool _moduleSolved;
 
-    private static readonly string[] _chartWords = new string[] { "DONE", "ADD", "FIND", "EAST", "PORT", "BOOM", "LIME", "ECHO", "CALL", "LOOK", "ZULU", "XRAY", "YES", "HELP", "BEEP", "TRUE", "MIKE", "EDGE", "RED", "WORD", "WORK", "TEST", "JINX", "GOLF", "TALK", "SIX", "LIST", "MATH", "NEXT", "READ", "LIMA", "FOUR" };
+    private static readonly string[] _chartWords = new string[] { "DONE", "ADD", "FIND", "EAST", "PORT", "BOOM", "LIME", "ECHO", "CALL", "LOOK", "ZERO", "XRAY", "YES", "HELP", "BEEP", "TRUE", "MIKE", "EDGE", "RED", "WORD", "WORK", "TEST", "JINX", "GOLF", "TALK", "SIX", "LIST", "MATH", "NEXT", "READ", "LIMA", "FOUR" };
 
     private static readonly string[] _colourNames = new string[] { "RED", "YELLOW", "GREEN", "WHITE", "BLUE", "MAGENTA" };
     private static readonly Color32[] _colours = new Color32[] { new Color32(255, 0, 0, 255), new Color32(255, 255, 0, 255), new Color32(0, 255, 0, 255), new Color32(255, 255, 255, 255), new Color32(0, 0, 255, 255), new Color32(255, 0, 255, 255) };

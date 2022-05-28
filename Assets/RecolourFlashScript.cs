@@ -528,4 +528,98 @@ public class RecolourFlashScript : MonoBehaviour
             btn.OnInteractEnded();
         }
     }
+
+    private IEnumerator TwitchHandleForcedSolve()
+    {
+        int t;
+        if (_selectedStart != null)
+        {
+            if (_selectedStart != _solutionStart)
+            {
+                t = (int)BombInfo.GetTime() % 2;
+                while (_curPos % 4 != _selectedStart % 4)
+                {
+                    while ((int)BombInfo.GetTime() % 2 != 0)
+                        yield return null;
+                    YesButton.OnInteract();
+                    while (t == (int)BombInfo.GetTime() % 2)
+                        yield return null;
+                    yield return null;
+                }
+                while (_curPos / 4 != _selectedStart / 4)
+                {
+                    while ((int)BombInfo.GetTime() % 2 != 0)
+                        yield return null;
+                    NoButton.OnInteract();
+                    while (t == (int)BombInfo.GetTime() % 2)
+                        yield return null;
+                    yield return null;
+                }
+                t = (int)BombInfo.GetTime() % 2;
+                while (t == (int)BombInfo.GetTime() % 2)
+                    yield return null;
+                YesButton.OnInteract();
+                yield return null;
+                YesButton.OnInteract();
+                yield return null;
+            }
+        }
+        if (_selectedStart != _solutionStart)
+        {
+            t = (int)BombInfo.GetTime() % 2;
+            while (_curPos % 4 != _solutionStart % 4)
+            {
+                while ((int)BombInfo.GetTime() % 2 != 0)
+                    yield return null;
+                YesButton.OnInteract();
+                while (t == (int)BombInfo.GetTime() % 2)
+                    yield return null;
+                yield return null;
+            }
+            while (_curPos / 4 != _solutionStart / 4)
+            {
+                while ((int)BombInfo.GetTime() % 2 != 0)
+                    yield return null;
+                NoButton.OnInteract();
+                while (t == (int)BombInfo.GetTime() % 2)
+                    yield return null;
+                yield return null;
+            }
+            t = (int)BombInfo.GetTime() % 2;
+            while (t == (int)BombInfo.GetTime() % 2)
+                yield return null;
+            YesButton.OnInteract();
+            yield return null;
+            YesButton.OnInteract();
+            yield return null;
+        }
+        t = (int)BombInfo.GetTime() % 2;
+        while (_curPos % 4 != _solutionEnd % 4)
+        {
+            while ((int)BombInfo.GetTime() % 2 != 0)
+                yield return null;
+            YesButton.OnInteract();
+            while (t == (int)BombInfo.GetTime() % 2)
+                yield return null;
+            yield return null;
+        }
+        while (_curPos / 4 != _solutionEnd / 4)
+        {
+            while ((int)BombInfo.GetTime() % 2 != 0)
+                yield return null;
+            NoButton.OnInteract();
+            while (t == (int)BombInfo.GetTime() % 2)
+                yield return null;
+            yield return null;
+        }
+        t = (int)BombInfo.GetTime() % 2;
+        while (t == (int)BombInfo.GetTime() % 2)
+            yield return null;
+        YesButton.OnInteract();
+        yield return null;
+        YesButton.OnInteract();
+        yield return null;
+        while (!_moduleSolved)
+            yield return true;
+    }
 }

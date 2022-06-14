@@ -52,7 +52,6 @@ public class RecolourFlashScript : MonoBehaviour
         new int[2]{5, 6 }, // H
         new int[2]{5, 7 }, // I
         new int[2]{0, 2 }, // J
-        new int[2]{0, 2 }, // J                                                                      //smhile
         new int[2]{5, 0 }, // K
         new int[2]{5, 1 }, // L
         new int[2]{5, 2 }, // M

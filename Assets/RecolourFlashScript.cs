@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using Rnd = UnityEngine.Random;
-using KModkit;
 using RecolourFlash;
 
 public class RecolourFlashScript : MonoBehaviour
@@ -23,7 +21,6 @@ public class RecolourFlashScript : MonoBehaviour
     private bool _moduleSolved;
 
     private static readonly string[] _chartWords = new string[] { "DONE", "ADD", "FIND", "EAST", "PORT", "BOOM", "LIME", "ECHO", "CALL", "LOOK", "ZERO", "XRAY", "YES", "HELP", "BEEP", "TRUE", "MIKE", "EDGE", "RED", "WORD", "WORK", "TEST", "JINX", "GOLF", "TALK", "SIX", "LIST", "MATH", "NEXT", "READ", "LIMA", "FOUR" };
-
     private static readonly string[] _colourNames = new string[] { "RED", "YELLOW", "GREEN", "WHITE", "BLUE", "MAGENTA" };
     private static readonly Color32[] _colours = new Color32[] { new Color32(255, 0, 0, 255), new Color32(255, 255, 0, 255), new Color32(0, 255, 0, 255), new Color32(255, 255, 255, 255), new Color32(0, 0, 255, 255), new Color32(255, 0, 255, 255) };
 
@@ -497,10 +494,10 @@ public class RecolourFlashScript : MonoBehaviour
     }
     private IEnumerator PressOnParity(int parity, KMSelectable btn, float delay = 0.1f)
     {
-        yield return new WaitUntil(()=> (int)BombInfo.GetTime() % 2 != parity % 2);
+        yield return new WaitUntil(() => (int)BombInfo.GetTime() % 2 != parity % 2);
         int curParity = (int)BombInfo.GetTime() % 2;
         yield return Press(btn, delay);
-        yield return new WaitUntil(()=> (int)BombInfo.GetTime() % 2 != curParity);
+        yield return new WaitUntil(() => (int)BombInfo.GetTime() % 2 != curParity);
     }
     private IEnumerator DoubleTap(KMSelectable btn, float delay = 0.1f)
     {
@@ -527,7 +524,6 @@ public class RecolourFlashScript : MonoBehaviour
         else
             yield return DoubleTap(btn);
     }
-
     private IEnumerator TwitchHandleForcedSolve()
     {
         if (_selectedStart != _solutionStart)
@@ -537,23 +533,18 @@ public class RecolourFlashScript : MonoBehaviour
             yield return NavigateToAndSubmit(_solutionStart);
         }
         yield return NavigateToAndSubmit(_solutionEnd);
-        
+
     }
     private IEnumerator NavigateToAndSubmit(int goal)
     {
-        Debug.LogFormat("Navigating from {0} to {1}.", CalcCoord(_curPos), CalcCoord(goal));
-        //code code code
         int goalRow = goal / 4;
         int goalCol = goal % 4;
-
-        int rowParity = (_curRow + 1) == goalRow ? 0 : 1; //If the goal is directly below us, go down. Otherwise, it doesn't rly matter.
-        int colParity = (_curCol + 1) == goalCol ? 0 : 1; //If the goal is directly to the right of us, go right, otherwise it doesn't rly matter again.
-
+        int rowParity = ((_curRow + 3) % 4) == goalRow ? 0 : 1; //If the goal is directly below us, go down. Otherwise, it doesn't rly matter.
+        int colParity = ((_curCol + 3) % 4) == goalCol ? 0 : 1; //If the goal is directly to the right of us, go right, otherwise it doesn't rly matter again.
         while (_curRow != goalRow)
             yield return PressOnParity(rowParity, NoButton);
         while (_curCol != goalCol)
             yield return PressOnParity(colParity, YesButton);
-
         yield return DoubleTap(NoButton);
     }
 }

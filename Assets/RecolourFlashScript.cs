@@ -488,7 +488,29 @@ public class RecolourFlashScript : MonoBehaviour
 #pragma warning disable 0414
     private readonly string TwitchHelpMessage = "!{0} press yes/no even/odd/twice. [Press the YES or NO button on an even digit, odd digit, or twice.]";
 #pragma warning restore 0414
-
+    private IEnumerator Press(KMSelectable btn, float delay = 0.1f)
+    {
+        btn.OnInteract();
+        yield return new WaitForSeconds(delay);
+        if (btn.OnInteractEnded != null)
+            btn.OnInteractEnded();
+    }
+    private IEnumerator PressOnParity(int parity, KMSelectable btn, float delay = 0.1f)
+    {
+        yield return new WaitUntil(()=> (int)BombInfo.GetTime() % 2 != parity % 2);
+        int curParity = (int)BombInfo.GetTime() % 2;
+        yield return Press(btn, delay);
+        yield return new WaitUntil(()=> (int)BombInfo.GetTime() % 2 != curParity);
+    }
+    private IEnumerator DoubleTap(KMSelectable btn, float delay = 0.1f)
+    {
+        int cd = (int)BombInfo.GetTime();
+        while ((int)BombInfo.GetTime() == cd)
+            yield return null;
+        yield return Press(btn, delay);
+        yield return new WaitForSeconds(delay);
+        yield return Press(btn, delay);
+    }
     private IEnumerator ProcessTwitchCommand(string command)
     {
         var m = Regex.Match(command, @"^\s*(press\s+)?((?<yes>yes)|no)\s+((?<even>even)|(?<odd>odd)|twice)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
@@ -499,127 +521,39 @@ public class RecolourFlashScript : MonoBehaviour
         yield return "strike";
         var btn = m.Groups["yes"].Success ? YesButton : NoButton;
         if (m.Groups["even"].Success)
-        {
-            while ((int)BombInfo.GetTime() % 2 != 0)
-                yield return null;
-            btn.OnInteract();
-            yield return new WaitForSeconds(0.1f);
-            btn.OnInteractEnded();
-        }
+            yield return PressOnParity(0, btn);
         else if (m.Groups["odd"].Success)
-        {
-            while ((int)BombInfo.GetTime() % 2 != 1)
-                yield return null;
-            btn.OnInteract();
-            yield return new WaitForSeconds(0.1f);
-            btn.OnInteractEnded();
-        }
+            yield return PressOnParity(1, btn);
         else
-        {
-            var cd = (int)BombInfo.GetTime();
-            while ((int)BombInfo.GetTime() == cd)
-                yield return null;
-            btn.OnInteract();
-            yield return new WaitForSeconds(0.1f);
-            btn.OnInteractEnded();
-            yield return new WaitForSeconds(0.1f);
-            btn.OnInteract();
-            yield return new WaitForSeconds(0.1f);
-            btn.OnInteractEnded();
-        }
+            yield return DoubleTap(btn);
     }
 
     private IEnumerator TwitchHandleForcedSolve()
     {
-        int t;
-        if (_selectedStart != null)
-        {
-            if (_selectedStart != _solutionStart)
-            {
-                t = (int)BombInfo.GetTime() % 2;
-                while (_curPos % 4 != _selectedStart % 4)
-                {
-                    while ((int)BombInfo.GetTime() % 2 != 0)
-                        yield return null;
-                    YesButton.OnInteract();
-                    while (t == (int)BombInfo.GetTime() % 2)
-                        yield return null;
-                    yield return null;
-                }
-                while (_curPos / 4 != _selectedStart / 4)
-                {
-                    while ((int)BombInfo.GetTime() % 2 != 0)
-                        yield return null;
-                    NoButton.OnInteract();
-                    while (t == (int)BombInfo.GetTime() % 2)
-                        yield return null;
-                    yield return null;
-                }
-                t = (int)BombInfo.GetTime() % 2;
-                while (t == (int)BombInfo.GetTime() % 2)
-                    yield return null;
-                YesButton.OnInteract();
-                yield return null;
-                YesButton.OnInteract();
-                yield return null;
-            }
-        }
         if (_selectedStart != _solutionStart)
         {
-            t = (int)BombInfo.GetTime() % 2;
-            while (_curPos % 4 != _solutionStart % 4)
-            {
-                while ((int)BombInfo.GetTime() % 2 != 0)
-                    yield return null;
-                YesButton.OnInteract();
-                while (t == (int)BombInfo.GetTime() % 2)
-                    yield return null;
-                yield return null;
-            }
-            while (_curPos / 4 != _solutionStart / 4)
-            {
-                while ((int)BombInfo.GetTime() % 2 != 0)
-                    yield return null;
-                NoButton.OnInteract();
-                while (t == (int)BombInfo.GetTime() % 2)
-                    yield return null;
-                yield return null;
-            }
-            t = (int)BombInfo.GetTime() % 2;
-            while (t == (int)BombInfo.GetTime() % 2)
-                yield return null;
-            YesButton.OnInteract();
-            yield return null;
-            YesButton.OnInteract();
-            yield return null;
+            if (_selectedStart != null)
+                yield return NavigateToAndSubmit(_selectedStart.Value);
+            yield return NavigateToAndSubmit(_solutionStart);
         }
-        t = (int)BombInfo.GetTime() % 2;
-        while (_curPos % 4 != _solutionEnd % 4)
-        {
-            while ((int)BombInfo.GetTime() % 2 != 0)
-                yield return null;
-            YesButton.OnInteract();
-            while (t == (int)BombInfo.GetTime() % 2)
-                yield return null;
-            yield return null;
-        }
-        while (_curPos / 4 != _solutionEnd / 4)
-        {
-            while ((int)BombInfo.GetTime() % 2 != 0)
-                yield return null;
-            NoButton.OnInteract();
-            while (t == (int)BombInfo.GetTime() % 2)
-                yield return null;
-            yield return null;
-        }
-        t = (int)BombInfo.GetTime() % 2;
-        while (t == (int)BombInfo.GetTime() % 2)
-            yield return null;
-        YesButton.OnInteract();
-        yield return null;
-        YesButton.OnInteract();
-        yield return null;
-        while (!_moduleSolved)
-            yield return true;
+        yield return NavigateToAndSubmit(_solutionEnd);
+        
+    }
+    private IEnumerator NavigateToAndSubmit(int goal)
+    {
+        Debug.LogFormat("Navigating from {0} to {1}.", CalcCoord(_curPos), CalcCoord(goal));
+        //code code code
+        int goalRow = goal / 4;
+        int goalCol = goal % 4;
+
+        int rowParity = (_curRow + 1) == goalRow ? 0 : 1; //If the goal is directly below us, go down. Otherwise, it doesn't rly matter.
+        int colParity = (_curCol + 1) == goalCol ? 0 : 1; //If the goal is directly to the right of us, go right, otherwise it doesn't rly matter again.
+
+        while (_curRow != goalRow)
+            yield return PressOnParity(rowParity, NoButton);
+        while (_curCol != goalCol)
+            yield return PressOnParity(colParity, YesButton);
+
+        yield return DoubleTap(NoButton);
     }
 }

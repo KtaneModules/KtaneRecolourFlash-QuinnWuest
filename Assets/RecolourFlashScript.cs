@@ -107,7 +107,7 @@ public class RecolourFlashScript : MonoBehaviour
         GenerateSemaphoreFlash();
         _flashSequence = StartCoroutine(FlashSequence());
 
-        Debug.LogFormat("[Recolour Flash #{0} Solution start: {1} > Solution end: {2}.", _moduleId, CalcCoord(_solutionStart), CalcCoord(_solutionEnd));
+        Debug.LogFormat("[Recolour Flash #{0}] Solution start: {1} > Solution end: {2}.", _moduleId, CalcCoord(_solutionStart), CalcCoord(_solutionEnd));
     }
 
     private bool YesPress()
@@ -335,10 +335,6 @@ public class RecolourFlashScript : MonoBehaviour
     {
         tryAgain:
         _field = new char[_w * _h];
-        _field[0] = (char)('A' + Rnd.Range(0, 26));
-        _field[_w - 1] = (char)('A' + Rnd.Range(0, 26));
-        _field[_w * (_h - 1)] = (char)('A' + Rnd.Range(0, 26));
-        _field[_w * _h - 1] = (char)('A' + Rnd.Range(0, 26));
 
         var coords = Enumerable.Range(0, _w * _h).ToList();
         var directions = new[] { WordDirection.Down, WordDirection.DownRight, WordDirection.Right, WordDirection.UpRight, WordDirection.Up, WordDirection.UpLeft, WordDirection.Left, WordDirection.DownLeft };
@@ -346,12 +342,12 @@ public class RecolourFlashScript : MonoBehaviour
         coords.Shuffle();
         foreach (var coord in coords)
             foreach (var dir in directions.Shuffle())
-                if (TryPlaceWord(_solution, 0, coord % _w, coord / _w, dir))
+                if (TryPlaceWord(_solution, coord % _w, coord / _w, dir))
                 {
                     _solutionStart = coord;
-                    var dx = new[] { 0, 1, 1, 1, 0, -1, -1, -1 };
-                    var dy = new[] { 1, 1, 0, -1, -1, -1, 0, 1 };
-                    _solutionEnd = coord + dx[(int)dir] * (_solution.Length - 1) + 4 * dy[(int)dir] * (_solution.Length - 1);
+                    var dx = new[] { 0, 1, 1, 1, 0, 3, 3, 3 };
+                    var dy = new[] { 1, 1, 0, 3, 3, 3, 0, 1 };
+                    _solutionEnd = 4 * ((coord / 4 + dy[(int)dir] * (_solution.Length - 1)) % 4) + (coord % 4 + dx[(int)dir] * (_solution.Length - 1)) % 4;
                     goto initialPlaced;
                 }
 
@@ -368,9 +364,9 @@ public class RecolourFlashScript : MonoBehaviour
         foreach (var wrong in wrongWords)
             foreach (var coord in coords)
                 foreach (var dir in directions)
-                    if (TryPlaceWord(wrong, 0, coord % _w, coord / _w, dir))
+                    if (TryPlaceWord(wrong, coord % _w, coord / _w, dir))
                     {
-                        Debug.LogFormat("[Recolour Flash #{4}] Wrong word {0} happens to come up in grid at {1},{2},{3}. Restarting.", wrong, coord % _w, coord / _w, dir, _moduleId);
+                        Debug.LogFormat("<Recolour Flash #{4}> Wrong word {0} happens to come up in grid at {1},{2},{3}. Restarting.", wrong, coord % _w, coord / _w, dir, _moduleId);
                         goto tryAgain;
                     }
 
@@ -379,105 +375,66 @@ public class RecolourFlashScript : MonoBehaviour
             Debug.LogFormat("[Recolour Flash #{0}] {1} {2} {3} {4} ", _moduleId, _field[r * 4 + 0], _field[r * 4 + 1], _field[r * 4 + 2], _field[r * 4 + 3]);
     }
 
-    private bool TryPlaceWord(string word, int i, int x, int y, WordDirection dir)
+    private bool TryPlaceWord(string word, int x, int y, WordDirection dir)
     {
         switch (dir)
         {
             case WordDirection.Down:
-                if (y - i >= 0 && y + (word.Length - 1) - i < _h)
-                {
-                    for (int j = 0; j < word.Length; j++)
-                        if (_field[x + _w * (y - i + j)] != '\0' && _field[x + _w * (y - i + j)] != word[j])
-                            return false;
-                    for (int j = 0; j < word.Length; j++)
-                        _field[x + _w * (y - i + j)] = word[j];
-                    return true;
-                }
-                break;
-
+                for (int j = 0; j < word.Length; j++)
+                    if (_field[x + _w * ((y + j) % 4)] != '\0' && _field[x + _w * ((y + j) % 4)] != word[j])
+                        return false;
+                for (int j = 0; j < word.Length; j++)
+                    _field[x + _w * ((y + j) % 4)] = word[j];
+                return true;
             case WordDirection.DownRight:
-                if (y - i >= 0 && y + (word.Length - 1) - i < _h && x - i >= 0 && x + (word.Length - 1) - i < _w)
-                {
-                    for (int j = 0; j < word.Length; j++)
-                        if (_field[(x - i + j) + _w * (y - i + j)] != '\0' && _field[(x - i + j) + _w * (y - i + j)] != word[j])
-                            return false;
-                    for (int j = 0; j < word.Length; j++)
-                        _field[(x - i + j) + _w * (y - i + j)] = word[j];
-                    return true;
-                }
-                break;
-
+                for (int j = 0; j < word.Length; j++)
+                    if (_field[((x + j) % 4) + _w * ((y + j) % 4)] != '\0' && _field[((x + j) % 4) + _w * ((y + j) % 4)] != word[j])
+                        return false;
+                for (int j = 0; j < word.Length; j++)
+                    _field[((x + j) % 4) + _w * ((y + j) % 4)] = word[j];
+                return true;
             case WordDirection.Right:
-                if (x - i >= 0 && x + (word.Length - 1) - i < _w)
-                {
-                    for (int j = 0; j < word.Length; j++)
-                        if (_field[(x - i + j) + _w * y] != '\0' && _field[(x - i + j) + _w * y] != word[j])
-                            return false;
-                    for (int j = 0; j < word.Length; j++)
-                        _field[(x - i + j) + _w * y] = word[j];
-                    return true;
-                }
-                break;
-
+                for (int j = 0; j < word.Length; j++)
+                    if (_field[((x + j) % 4) + _w * y] != '\0' && _field[((x + j) % 4) + _w * y] != word[j])
+                        return false;
+                for (int j = 0; j < word.Length; j++)
+                    _field[((x + j) % 4) + _w * y] = word[j];
+                return true;
             case WordDirection.UpRight:
-                if (y + i < _h && y - (word.Length - 1) + i >= 0 && x - i >= 0 && x + (word.Length - 1) - i < _w)
-                {
-                    for (int j = 0; j < word.Length; j++)
-                        if (_field[(x - i + j) + _w * (y + i - j)] != '\0' && _field[(x - i + j) + _w * (y + i - j)] != word[j])
-                            return false;
-                    for (int j = 0; j < word.Length; j++)
-                        _field[(x - i + j) + _w * (y + i - j)] = word[j];
-                    return true;
-                }
-                break;
-
+                for (int j = 0; j < word.Length; j++)
+                    if (_field[((x + j) % 4) + _w * ((y - j + 4) % 4)] != '\0' && _field[((x + j) % 4) + _w * ((y - j + 4) % 4)] != word[j])
+                        return false;
+                for (int j = 0; j < word.Length; j++)
+                    _field[((x + j) % 4) + _w * ((y - j + 4) % 4)] = word[j];
+                return true;
             case WordDirection.Up:
-                if (y + i < _h && y - (word.Length - 1) + i >= 0)
-                {
-                    for (int j = 0; j < word.Length; j++)
-                        if (_field[x + _w * (y + i - j)] != '\0' && _field[x + _w * (y + i - j)] != word[j])
-                            return false;
-                    for (int j = 0; j < word.Length; j++)
-                        _field[x + _w * (y + i - j)] = word[j];
-                    return true;
-                }
-                break;
-
+                for (int j = 0; j < word.Length; j++)
+                    if (_field[x + _w * ((y - j + 4) % 4)] != '\0' && _field[x + _w * ((y - j + 4) % 4)] != word[j])
+                        return false;
+                for (int j = 0; j < word.Length; j++)
+                    _field[x + _w * ((y - j + 4) % 4)] = word[j];
+                return true;
             case WordDirection.UpLeft:
-                if (y + i < _h && y - (word.Length - 1) + i >= 0 && x + i < _w && x - (word.Length - 1) + i >= 0)
-                {
-                    for (int j = 0; j < word.Length; j++)
-                        if (_field[(x + i - j) + _w * (y + i - j)] != '\0' && _field[(x + i - j) + _w * (y + i - j)] != word[j])
-                            return false;
-                    for (int j = 0; j < word.Length; j++)
-                        _field[(x + i - j) + _w * (y + i - j)] = word[j];
-                    return true;
-                }
-                break;
-
+                for (int j = 0; j < word.Length; j++)
+                    if (_field[((x - j + 4) % 4) + _w * ((y - j + 4) % 4)] != '\0' && _field[((x - j + 4) % 4) + _w * ((y - j + 4) % 4)] != word[j])
+                        return false;
+                for (int j = 0; j < word.Length; j++)
+                    _field[((x - j + 4) % 4) + _w * ((y - j + 4) % 4)] = word[j];
+                return true;
             case WordDirection.Left:
-                if (x + i < _w && x - (word.Length - 1) + i >= 0)
-                {
-                    for (int j = 0; j < word.Length; j++)
-                        if (_field[(x + i - j) + _w * y] != '\0' && _field[(x + i - j) + _w * y] != word[j])
-                            return false;
-                    for (int j = 0; j < word.Length; j++)
-                        _field[(x + i - j) + _w * y] = word[j];
-                    return true;
-                }
-                break;
-
+                for (int j = 0; j < word.Length; j++)
+                    if (_field[((x - j + 4) % 4) + _w * y] != '\0' && _field[((x - j + 4) % 4) + _w * y] != word[j])
+                        return false;
+                for (int j = 0; j < word.Length; j++)
+                    _field[((x - j + 4) % 4) + _w * y] = word[j];
+                return true;
             case WordDirection.DownLeft:
-                if (y - i >= 0 && y + (word.Length - 1) - i < _h && x + i < _w && x - (word.Length - 1) + i >= 0)
-                {
-                    for (int j = 0; j < word.Length; j++)
-                        if (_field[(x + i - j) + _w * (y - i + j)] != '\0' && _field[(x + i - j) + _w * (y - i + j)] != word[j])
-                            return false;
-                    for (int j = 0; j < word.Length; j++)
-                        _field[(x + i - j) + _w * (y - i + j)] = word[j];
-                    return true;
-                }
-                break;
+                for (int j = 0; j < word.Length; j++)
+                    if (_field[((x - j + 4) % 4) + _w * ((y + j) % 4)] != '\0' && _field[((x - j + 4) % 4) + _w * ((y + j) % 4)] != word[j])
+                        return false;
+                for (int j = 0; j < word.Length; j++)
+                    _field[((x - j + 4) % 4) + _w * ((y + j) % 4)] = word[j];
+                return true;
         }
         return false;
     }

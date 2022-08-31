@@ -289,7 +289,7 @@ public class RecolourFlashScript : MonoBehaviour
             ScreenText.color = _colours[_flashes[_curFlash][1]];
             if (_curFlash == 0)
             {
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 7; i++)
                 {
                     if (i % 2 == 0)
                     {

@@ -324,7 +324,7 @@ public class RecolourFlashScript : MonoBehaviour
                 if (_flashes[i][1] == _flashes[i][0])
                     goto tryAgain3;
             }
-            if (_flashes[i][0] == _flashes[(i + 7) % 8][0] && _flashes[i][1] == _flashes[(i + 7) % 8][1])
+            if ((_flashes[i][0] == _flashes[(i + 7) % 8][0] && _flashes[i][1] == _flashes[(i + 7) % 8][1]) || (_flashes[i][0] == _flashes[(i + 1) % 8][0] && _flashes[i][1] == _flashes[(i + 1) % 8][1]))
                 goto tryAgain2;
         }
         ScreenText.text = _colourNames[_flashes[_curFlash][0]];

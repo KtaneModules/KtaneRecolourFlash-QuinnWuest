@@ -503,7 +503,7 @@ public class RecolourFlashScript : MonoBehaviour
         while (_curCol != goalCol)
             yield return PressOnParity(colParity, YesButton);
         yield return DoubleTap(NoButton);
-        while (!_moduleSolved)
+        while (!_moduleSolved && _selectedEnd != null)
             yield return true;
     }
 }
